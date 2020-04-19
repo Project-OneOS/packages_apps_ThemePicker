@@ -40,12 +40,13 @@ LOCAL_PRIVILEGED_MODULE := true
 #LOCAL_PRODUCT_MODULE := true
 #LOCAL_OVERRIDES_PACKAGES := WallpaperPicker2
 LOCAL_CERTIFICATE := platform
+LOCAL_REQUIRED_MODULES := privapp_whitelist_com.android.customization
 
 LOCAL_SRC_FILES := $(call all-java-files-under, $(WALLPAPER_PATH)/src) \
     $(call all-java-files-under, src) \
     $(call all-java-files-under, src_override)
 
-LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res 
+LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 
 LOCAL_MANIFEST_FILE := AndroidManifest.xml
 

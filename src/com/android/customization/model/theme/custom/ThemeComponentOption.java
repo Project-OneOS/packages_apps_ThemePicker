@@ -21,7 +21,6 @@ import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY
 import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY_ICON_LAUNCHER;
 import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY_ICON_SETTINGS;
 import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY_ICON_SYSUI;
-import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY_ICON_THEMEPICKER;
 import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY_SHAPE;
 
 import android.content.Context;
@@ -146,6 +145,9 @@ public abstract class ThemeComponentOption implements CustomizationOption<ThemeC
             }
             TextView title = container.findViewById(R.id.font_card_title);
             title.setTypeface(mHeadlineFont);
+            TextView header = container.findViewById(R.id.theme_preview_card_header);
+            header.setText(container.getContext().getString(R.string.preview_name_font)
+                    + "\n\u0028" + mLabel + "\u0029");
             TextView bodyText = container.findViewById(R.id.font_card_body);
             bodyText.setTypeface(mBodyFont);
             container.findViewById(R.id.font_card_divider).setBackgroundColor(
@@ -204,8 +206,7 @@ public abstract class ThemeComponentOption implements CustomizationOption<ThemeC
                 return themePackages.get(OVERLAY_CATEGORY_ICON_SYSUI) == null &&
                         themePackages.get(OVERLAY_CATEGORY_ICON_SETTINGS) == null &&
                         themePackages.get(OVERLAY_CATEGORY_ICON_ANDROID) == null &&
-                        themePackages.get(OVERLAY_CATEGORY_ICON_LAUNCHER) == null &&
-                        themePackages.get(OVERLAY_CATEGORY_ICON_THEMEPICKER) == null;
+                        themePackages.get(OVERLAY_CATEGORY_ICON_LAUNCHER) == null;
             }
             for (Map.Entry<String, String> overlayEntry : getOverlayPackages().entrySet()) {
                 if(!Objects.equals(overlayEntry.getValue(),
@@ -225,6 +226,9 @@ public abstract class ThemeComponentOption implements CustomizationOption<ThemeC
         public void bindPreview(ViewGroup container) {
             bindPreviewHeader(container, R.string.preview_name_icon, R.drawable.ic_wifi_24px);
 
+            TextView header = container.findViewById(R.id.theme_preview_card_header);
+            header.setText(container.getContext().getString(R.string.preview_name_icon)
+                    + "\n\u0028" + mLabel + "\u0029");
             ViewGroup cardBody = container.findViewById(R.id.theme_preview_card_body_container);
             if (cardBody.getChildCount() == 0) {
                 LayoutInflater.from(container.getContext()).inflate(
@@ -342,6 +346,9 @@ public abstract class ThemeComponentOption implements CustomizationOption<ThemeC
         public void bindPreview(ViewGroup container) {
             bindPreviewHeader(container, R.string.preview_name_color, R.drawable.ic_colorize_24px);
 
+            TextView header = container.findViewById(R.id.theme_preview_card_header);
+            header.setText(container.getContext().getString(R.string.preview_name_color)
+                    + "\n\u0028" + mLabel + "\u0029");
             ViewGroup cardBody = container.findViewById(R.id.theme_preview_card_body_container);
             if (cardBody.getChildCount() == 0) {
                 LayoutInflater.from(container.getContext()).inflate(
@@ -379,10 +386,13 @@ public abstract class ThemeComponentOption implements CustomizationOption<ThemeC
             seekbar.setProgressBackgroundTintList(seekbarTintList);
             // Disable seekbar
             seekbar.setOnTouchListener((view, motionEvent) -> true);
+
+            int iconFgColor = res.getColor(R.color.tile_enabled_icon_color, null);
             if (!mIcons.isEmpty() && mShapeDrawable != null) {
                 for (int i = 0; i < COLOR_TILE_IDS.length; i++) {
                     Drawable icon = mIcons.get(COLOR_TILES_ICON_IDS[i][1]).getConstantState()
                             .newDrawable();
+                    icon.setTint(iconFgColor);
                     //TODO: load and set the shape.
                     Drawable bgShape = mShapeDrawable.getConstantState().newDrawable();
                     bgShape.setTint(accentColor);
@@ -416,18 +426,20 @@ public abstract class ThemeComponentOption implements CustomizationOption<ThemeC
         private final List<Drawable> mAppIcons;
         private final String mLabel;
         private final Path mPath;
+        private final int mCornerRadius;
         private int[] mShapeIconIds = {
                 R.id.shape_preview_icon_0, R.id.shape_preview_icon_1, R.id.shape_preview_icon_2,
                 R.id.shape_preview_icon_3, R.id.shape_preview_icon_4, R.id.shape_preview_icon_5
         };
 
         ShapeOption(String packageName, String label, Path path,
-                Drawable shapeDrawable,
+                @Dimension int cornerRadius, Drawable shapeDrawable,
                 List<Drawable> appIcons) {
             addOverlayPackage(OVERLAY_CATEGORY_SHAPE, packageName);
             mLabel = label;
             mAppIcons = appIcons;
             mPath = path;
+            mCornerRadius = cornerRadius;
             Drawable background = shapeDrawable.getConstantState().newDrawable();
             Drawable foreground = shapeDrawable.getConstantState().newDrawable();
             mShape = new LayerDrawable(new Drawable[]{background, foreground});
@@ -477,6 +489,9 @@ public abstract class ThemeComponentOption implements CustomizationOption<ThemeC
         public void bindPreview(ViewGroup container) {
             bindPreviewHeader(container, R.string.preview_name_shape, R.drawable.ic_shapes_24px);
 
+            TextView header = container.findViewById(R.id.theme_preview_card_header);
+            header.setText(container.getContext().getString(R.string.preview_name_shape)
+                    + "\n\u0028" + mLabel + "\u0029");
             ViewGroup cardBody = container.findViewById(R.id.theme_preview_card_body_container);
             if (cardBody.getChildCount() == 0) {
                 LayoutInflater.from(container.getContext()).inflate(
@@ -490,7 +505,7 @@ public abstract class ThemeComponentOption implements CustomizationOption<ThemeC
 
         @Override
         public Builder buildStep(Builder builder) {
-            builder.setShapePath(mPath);
+            builder.setShapePath(mPath).setBottomSheetCornerRadius(mCornerRadius);
             for (Drawable appIcon : mAppIcons) {
                 builder.addShapePreviewIcon(appIcon);
             }

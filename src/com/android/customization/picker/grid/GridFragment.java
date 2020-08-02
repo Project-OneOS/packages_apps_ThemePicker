@@ -18,7 +18,6 @@ package com.android.customization.picker.grid;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -116,13 +115,8 @@ public class GridFragment extends ToolbarFragment {
         mLoading = view.findViewById(R.id.loading_indicator);
         mError = view.findViewById(R.id.error_section);
         final Resources res = getResources();
-
-        Point size = new Point();
-        getContext().getDisplay().getRealSize(size);
-        int width = size.x;
-        int height = size.y;
-        mScreenAspectRatio = (float) size.y / size.x;
-
+        DisplayMetrics dm = res.getDisplayMetrics();
+        mScreenAspectRatio = (float) dm.heightPixels / dm.widthPixels;
         setUpOptions();
         view.findViewById(R.id.apply_button).setOnClickListener(v -> {
             mGridManager.apply(mSelectedOption,  new Callback() {
@@ -162,8 +156,6 @@ public class GridFragment extends ToolbarFragment {
 
     private void loadWallpaperBackground() {
         if (mHomeWallpaper != null && mCardHeight > 0 && mCardWidth > 0) {
-            Log.d(TAG, "loadWallpaperBackground mCardWidth = " + mCardWidth + " mCardHeight= " + mCardHeight);
-
             mHomeWallpaper.getThumbAsset(getContext()).decodeBitmap(mCardWidth,
                     mCardHeight,
                     bitmap -> {

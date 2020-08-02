@@ -23,7 +23,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -388,7 +387,7 @@ public class ThemeFragment extends ToolbarFragment {
 
             addPage(new ThemeCoverPage(activity, theme.getTitle(),
                     previewInfo.resolveAccentColor(res), previewInfo.icons,
-                    previewInfo.headlineFontFamily,
+                    previewInfo.headlineFontFamily, previewInfo.bottomSheeetCornerRadius,
                     previewInfo.shapeDrawable, previewInfo.shapeAppIcons, editClickListener,
                     mColorButtonIds, mColorTileIds, mColorTileIconIds, mShapeIconIds,
                     wallpaperListener, coverCardLayoutListener));
@@ -455,10 +454,12 @@ public class ThemeFragment extends ToolbarFragment {
                         // Disable seekbar
                         seekbar.setOnTouchListener((view, motionEvent) -> true);
 
+                        int iconFgColor = res.getColor(R.color.tile_enabled_icon_color, null);
                         for (int i = 0; i < mColorTileIds.length && i < previewInfo.icons.size();
                                 i++) {
                             Drawable icon = previewInfo.icons.get(mColorTileIconIds[i][1])
                                     .getConstantState().newDrawable().mutate();
+                            icon.setTint(iconFgColor);
                             Drawable bgShape =
                                     previewInfo.shapeDrawable.getConstantState().newDrawable();
                             bgShape.setTint(accentColor);
@@ -571,7 +572,7 @@ public class ThemeFragment extends ToolbarFragment {
                 if (mScrim != null) {
                     background = new LayerDrawable(new Drawable[]{background, mScrim});
                 }
-                ((ImageView) view.findViewById(R.id.theme_preview_card_background)).setImageDrawable(background);
+                view.findViewById(R.id.theme_preview_card_background).setBackground(background);
                 if (mScrim == null && !mIsTranslucent) {
                     boolean shouldRecycle = false;
                     if (bitmap.getConfig() == Config.HARDWARE) {
